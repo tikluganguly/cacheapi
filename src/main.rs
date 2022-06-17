@@ -8,7 +8,7 @@ use warp::Filter;
 
 #[tokio::main]
 async fn main() {
-    // GET /hello/warp => 200 OK with body "Hello, warp!"
+    // GET /str/:string => 200 OK with body "Hello, name"
     let hello = warp::path!("str" / String).map(|name| {
         println!("Got name : {}", name);
         format!("Hello, {}!", name)
