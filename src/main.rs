@@ -1,20 +1,14 @@
-//use warp::Reply;
-use warp::Filter;
+use crate::db::strdb::StrDb;
 
-/*fn strVal(name: String)->Reply {
-    println!("Got name : {}", name);
-    format!("Hello, {}!", name)
-}*/
+mod db {
+    pub mod strdb;
+}
 
 #[tokio::main]
 async fn main() {
-    // GET /str/:string => 200 OK with body "Hello, name"
-    let hello = warp::path!("str" / String).map(|name| {
-        println!("Got name : {}", name);
-        format!("Hello, {}!", name)
-    });
+    let db = StrDb::new();
 
     let port = 3030;
     println!("Serving the memory db at : {}", port);
-    warp::serve(hello).run(([127, 0, 0, 1], port)).await;
+    warp::serve(db.all()).run(([127, 0, 0, 1], port)).await;
 }
