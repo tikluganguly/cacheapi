@@ -11,21 +11,23 @@ pub struct StrDb {
     db: Db,
 }
 
-pub impl StrDb {
+impl StrDb {
     pub fn new() -> Self {
         StrDb {
             db: Arc::new(RwLock::new(HashMap::new())),
         }
     }
 
-    pub fn all(&self) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> {
+    pub fn all(&self) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
         self.list_filter()
             .or(self.get_filter())
             .or(self.upsert_filter())
     }
 
     //for GET /str
-    fn list_filter(&self) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> {
+    fn list_filter(
+        &self,
+    ) -> impl Filter<Extract = impl warp::Reply, Error = warp::Rejection> + Clone {
         warp::path!("str")
             .and(warp::get())
             .and_then(self.list_handler)
