@@ -18,35 +18,22 @@ impl StrDb {
     }
 
     //the list function handler
-    async fn list_handler(&self) -> Result<impl warp::Reply, Infallible> {
+    async fn list(&self) -> Vec<String> {
         // Just return a JSON array of todos, applying the limit and offset.
         let db = self.db.read();
-        let vec: Vec<String> = db.into_keys().collect();
-        Ok(warp::reply::json(&vec))
+        let vec: Vec<String> = db.to_owned().into_keys().collect();
+        vec
     }
 
-    async fn get_handler(&self, key: String) -> Result<impl warp::Reply, Infallible> {
+    async fn get(&self, key: String) -> String {
         let db = self.db.read();
         let val = db.get(&key);
-        if let Some(v) = val {
-            Ok(warp::reply::json(&v))
-        } else {
-            Ok(warp::reply::with_status("Not Found", StatusCode::NOT_FOUND))
+        match val {
+            Some(z) => z.to_string(),
+            None => "".to_string(),
         }
     }
-
-    fn json_body(&self) -> impl Filter<Extract = (String,), Error = warp::Rejection> + Clone {
-        warp::body::content_length_limit(1024 * 16).and(warp::body::json())
+    async fn upsert(&self, key: String, val: String) {
+        self.db.write().insert(key, val);
     }
-
-    fn with_db(&self) -> impl Filter<Extract = (Db,), Error = std::convert::Infallible> + Clone {
-        warp::any().map(move || self.db.clone())
-    }
-}
-
-async fn upsert_handler(db: Db, key: String, val: String) -> Result<impl warp::Reply, Infallible> {
-    //log::debug!("upsert_handler: {}: {}", key, val);
-    db.write().insert(key, val);
-
-    Ok(StatusCode::CREATED)
 }
