@@ -16,8 +16,4 @@ async fn main() -> std::io::Result<()> {
     .bind(("127.0.0.1", 8080))?
     .run()
     .await;
-
-    let port = 3030;
-    println!("Serving the memory db at : {}", port);
-    warp::serve(db.all()).run(([127, 0, 0, 1], port)).await;
 }
