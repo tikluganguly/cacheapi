@@ -1,12 +1,21 @@
-use crate::db::strdb::StrDb;
+use actix_web::{middleware::Logger, web::Data, App, HttpServer};
 
-mod db {
-    pub mod strdb;
-}
+mod api;
+mod db;
 
-#[tokio::main]
-async fn main() {
-    let db = StrDb::new();
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    std::env::set_var("RUST_LOG", "debug");
+    std::env::set_var("RUST_BACKTRACE", "1");
+    env_logger::init();
+
+    HttpServer::new(move || {
+        let logger = Logger::default();
+        App::new().wrap(logger).service(factory)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await;
 
     let port = 3030;
     println!("Serving the memory db at : {}", port);
