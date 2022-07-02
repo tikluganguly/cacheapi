@@ -1,6 +1,5 @@
 use parking_lot::RwLock;
 use std::collections::HashMap;
-use std::convert::Infallible;
 use std::sync::Arc;
 
 pub type Db = Arc<RwLock<HashMap<String, String>>>;
@@ -18,14 +17,14 @@ impl StrDb {
     }
 
     //the list function handler
-    async fn list(&self) -> Vec<String> {
+    pub async fn list(&self) -> Vec<String> {
         // Just return a JSON array of todos, applying the limit and offset.
         let db = self.db.read();
         let vec: Vec<String> = db.to_owned().into_keys().collect();
         vec
     }
 
-    async fn get(&self, key: String) -> String {
+    pub async fn get(&self, key: String) -> String {
         let db = self.db.read();
         let val = db.get(&key);
         match val {
@@ -33,7 +32,7 @@ impl StrDb {
             None => "".to_string(),
         }
     }
-    async fn upsert(&self, key: String, val: String) {
+    pub async fn upsert(&self, key: String, val: String) {
         self.db.write().insert(key, val);
     }
 }

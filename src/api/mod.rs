@@ -1,1 +1,1 @@
-mod strapi;
+pub mod strapi;

@@ -1,1 +1,1 @@
-mod strdb;
+pub mod strdb;

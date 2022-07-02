@@ -1,4 +1,5 @@
 use actix_web::{middleware::Logger, web::Data, App, HttpServer};
+use api::strapi;
 
 mod api;
 mod db;
@@ -11,9 +12,9 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let logger = Logger::default();
-        App::new().wrap(logger).service(factory)
+        App::new().wrap(logger).service(strapi::get_task)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
-    .await;
+    .await
 }
